@@ -1,0 +1,289 @@
+#VRML_SIM R2021a utf8
+WorldInfo {
+  coordinateSystem "NUE"
+  contactProperties [
+    ContactProperties {
+      material1 "rob"
+      material2 "surf"
+      bounce 0
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.4584419413683553 -0.8556317115758588 -0.24026102584518252 1.099132372920553
+  position -1.0846500643240855 0.9840529568487948 0.7215426062569472
+}
+DirectionalLight {
+  direction 2 -7 6
+}
+Solid {
+  translation 0 0.01 0
+  children [
+    DEF plane Shape {
+      appearance Appearance {
+        material Material {
+          shininess 0.5
+        }
+        texture ImageTexture {
+          url [
+            "textures/chessboard.jpg"
+          ]
+        }
+      }
+      geometry Plane {
+        size 2 2
+      }
+    }
+  ]
+  contactMaterial "surf"
+  boundingObject USE plane
+}
+Background {
+  skyColor [
+    0.67451 0.815686 1
+  ]
+}
+Robot {
+  translation 0 0.01 0
+  children [
+    DEF base Transform {
+      translation 0 0.04 0
+      children [
+        Shape {
+          appearance DEF roboBlackmet PBRAppearance {
+            baseColor 0.2 0.2 0.2
+            roughness 0.7
+            metalness 0
+          }
+          geometry Box {
+            size 0.2 0.08 0.2
+          }
+          castShadows FALSE
+        }
+      ]
+    }
+    HingeJoint {
+      jointParameters DEF jp0 HingeJointParameters {
+        axis 0 1 0
+      }
+      device [
+        RotationalMotor {
+          name "m0"
+        }
+        PositionSensor {
+          name "p0"
+        }
+      ]
+      endPoint Solid {
+        translation 8.909451209779949e-08 -7.847876525222257e-05 -4.3112255619619953e-07
+        rotation -0.9999959039630015 1.455368325303897e-06 -0.0028621766369718925 5.423531405242047e-06
+        children [
+          HingeJoint {
+            jointParameters DEF jp1 HingeJointParameters {
+              anchor 0 0.11 0
+            }
+            device [
+              RotationalMotor {
+                name "m1"
+              }
+              PositionSensor {
+                name "p1"
+              }
+            ]
+            endPoint Solid {
+              translation -2.5728759615569393e-12 -1.1780175528108838e-07 1.475455503191503e-07
+              rotation 1 0 0 0
+              children [
+                HingeJoint {
+                  jointParameters DEF jp2 HingeJointParameters {
+                    anchor 0 0.278 0
+                  }
+                  device [
+                    RotationalMotor {
+                      name "m2"
+                    }
+                    PositionSensor {
+                      name "p2"
+                    }
+                  ]
+                  endPoint Solid {
+                    translation -3.0729155633210084e-10 -6.024923664360582e-06 7.354587436628422e-06
+                    rotation 1 0 0 0
+                    children [
+                      HingeJoint {
+                        jointParameters DEF jp3 HingeJointParameters {
+                          anchor 0 0.43 0
+                        }
+                        device [
+                          RotationalMotor {
+                            name "m3"
+                          }
+                          PositionSensor {
+                            name "p3"
+                          }
+                        ]
+                        endPoint Solid {
+                          translation -7.218307209940247e-10 -4.013158928006799e-06 3.2149654162549515e-06
+                          rotation 1 0 0 0
+                          children [
+                            HingeJoint {
+                              jointParameters DEF jp4 HingeJointParameters {
+                                anchor 0 0.559 0
+                              }
+                              device [
+                                PositionSensor {
+                                  name "p4"
+                                }
+                                RotationalMotor {
+                                  name "m4"
+                                }
+                              ]
+                              endPoint Solid {
+                                translation 0.0008000072801178336 1.4329975688953667e-05 1.3660807597035112e-05
+                                rotation 1 0 0 0
+                                children [
+                                  Solid {
+                                    translation 0 0.600019 0
+                                    children [
+                                      GPS {
+                                      }
+                                      Connector {
+                                        translation 3.9458e-12 0 0.000144952
+                                        rotation -1 3.9252233368857445e-16 -4.07241921201896e-16 1.5708003061004248
+                                        name "c1"
+                                        model "ab"
+                                        type "active"
+                                        isLocked TRUE
+                                        autoLock TRUE
+                                        distanceTolerance 0.005
+                                        axisTolerance 1.8
+                                        snap FALSE
+                                      }
+                                    ]
+                                    physics Physics {
+                                      density -1
+                                      mass 1
+                                      centerOfMass [
+                                        0 0 0
+                                      ]
+                                      inertiaMatrix [
+                                        1 1 5
+                                        0 0 0
+                                      ]
+                                    }
+                                  }
+                                  DEF Magnet Shape {
+                                    appearance PBRAppearance {
+                                      baseColor 1 0.4 0
+                                      roughness 1
+                                      metalness 0
+                                    }
+                                    geometry Mesh {
+                                      url [
+                                        "F:/Transporter/mod/6.Magnet.dae"
+                                      ]
+                                    }
+                                    castShadows FALSE
+                                    isPickable FALSE
+                                  }
+                                ]
+                              }
+                            }
+                            DEF Third_Hand Shape {
+                              appearance PBRAppearance {
+                                baseColor 0 0 0
+                                roughness 1
+                              }
+                              geometry Mesh {
+                                url [
+                                  "F:/Transporter/mod/5Third_Hand.dae"
+                                ]
+                              }
+                            }
+                          ]
+                          boundingObject USE Third_Hand
+                        }
+                      }
+                      DEF Second_Hand Shape {
+                        appearance PBRAppearance {
+                          baseColor 0 0 0
+                          roughness 1
+                          metalness 0.7
+                        }
+                        geometry Mesh {
+                          url [
+                            "F:/Transporter/mod/4.Second_Hand.dae"
+                          ]
+                        }
+                        castShadows FALSE
+                      }
+                    ]
+                    boundingObject USE Second_Hand
+                  }
+                }
+                DEF First_Hand Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.1 0.1 0.1
+                    roughness 0.7
+                    metalness 0.7
+                  }
+                  geometry Mesh {
+                    url [
+                      "F:/Transporter/mod/3.First_Hand.dae"
+                    ]
+                  }
+                  castShadows FALSE
+                }
+              ]
+              boundingObject USE First_Hand
+            }
+          }
+          DEF Rotating_Base Shape {
+            appearance PBRAppearance {
+              baseColor 0.1 0.1 0.1
+              roughness 0.7
+              metalness 0
+            }
+            geometry Mesh {
+              url [
+                "F:/Transporter/mod/2.Rotating_Base.dae"
+              ]
+            }
+          }
+        ]
+        name "solid(1)"
+        boundingObject USE Rotating_Base
+      }
+    }
+  ]
+  contactMaterial "rob"
+  boundingObject USE base
+  controller "Tars_Controller"
+  supervisor TRUE
+}
+DEF load Solid {
+  translation -0.361391 0.0299749 0.0242335
+  rotation 5.20407e-17 -1 7.80611e-17 -1.5707953071795862
+  children [
+    Connector {
+      translation 0 0.02 4.67812e-14
+      rotation -1 0 0 1.5707996938995747
+      model "ab"
+      type "passive"
+      rotationTolerance 3.14
+    }
+    DEF loadbox Shape {
+      appearance PBRAppearance {
+        baseColor 1 0.2 0
+      }
+      geometry Box {
+        size 0.04 0.04 0.04
+      }
+    }
+  ]
+  name "solid(2)"
+  boundingObject USE loadbox
+  physics Physics {
+    density 10
+  }
+}
