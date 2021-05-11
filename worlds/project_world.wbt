@@ -10,8 +10,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.4584419413683553 -0.8556317115758588 -0.24026102584518252 1.099132372920553
-  position -1.0846500643240855 0.9840529568487948 0.7215426062569472
+  orientation -0.8651702066989996 0.49984930820146084 0.04038790079877352 0.1862441836368559
+  position -0.2696421940879009 0.4022259564406037 1.4551639471915574
 }
 DirectionalLight {
   direction 2 -7 6
@@ -155,8 +155,8 @@ Robot {
                                         type "active"
                                         isLocked TRUE
                                         autoLock TRUE
-                                        distanceTolerance 0.005
-                                        axisTolerance 1.8
+                                        distanceTolerance 0.03
+                                        axisTolerance 3.14
                                         snap FALSE
                                       }
                                     ]
@@ -265,6 +265,14 @@ DEF load Solid {
   translation -0.361391 0.0299749 0.0242335
   rotation 5.20407e-17 -1 7.80611e-17 -1.5707953071795862
   children [
+    Connector {
+      translation 0 0.02 4.67812e-14
+      rotation 8.270403288771981e-08 0.7071082811855507 0.7071052811843577 3.14159
+      name "connector(1)"
+      model "ab"
+      type "passive"
+      rotationTolerance 3.14
+    }
     Connector {
       translation 0 0.02 4.67812e-14
       rotation -1 0 0 1.5707996938995747
