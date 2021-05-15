@@ -1,11 +1,25 @@
 #--------------------- Import Librariesc -------------------------------------------------|
+from re import S
 from controller import Robot,Keyboard,Supervisor
 import numpy as np
 import random
 import math
 from gym import Env
 from gym.spaces import Discrete,Box
-#import tensorflow as tf
+from gym import logger
+import time
+
+# tensorflow libraries
+
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from keras.optimizers import Adam
+
+from rl.agents.dqn import DQNAgent
+from rl.policy import BoltzmannQPolicy
+from rl.memory import SequentialMemory
+
+
 
 
 #---------------------- Initilise Robot --------------------------------------------------|
@@ -13,7 +27,7 @@ robot = Supervisor()
 timestep = int(robot.getBasicTimeStep())
 
 #---------------------- Initilize Devices ------------------------------------------------|
-
+logger.set_level(40)
 
 m0 = robot.getDevice('m0')
 m1 = robot.getDevice('m1')
@@ -53,7 +67,6 @@ m4.setVelocity(1)
 def get_point_distance(p1,p2):
     return math.sqrt(((p1[0]-p2[0])**2)+((p1[1]-p2[1])**2)+((p1[2]-p2[2])**2))
 
-
 def get_random(min,max,emin,emax):
     v = np.random.uniform(min,max)    
     while v < emax and v>emin :        
@@ -88,9 +101,7 @@ def PosInit(obj_off):#used for setting initial random values to motor
     dpz = get_random(-0.33,0.33,-0.16,0.16)
     while get_point_distance([lpx,0.0299986,lpz],[dpx,0.0299986,dpz]) < min_pickup_drop_distance:           
         dpx = get_random(-0.33,0.33,-0.16,0.16)
-        dpz = get_random(-0.33,0.33,-0.16,0.16)
-            
-    
+        dpz = get_random(-0.33,0.33,-0.16,0.16) 
     
     obj_hgh_offset = obj_off #distance from centre of object to side faces
     isoutside = False
@@ -111,14 +122,10 @@ def PosInit(obj_off):#used for setting initial random values to motor
         m1.setPosition(mv1)
         m2.setPosition(mv2)
         m3.setPosition(mv3)
-        m4.setPosition(mv4)
+        m4.setPosition(mv4)       
         
-        
-        
-        #check if initial position is in restricted area        
-        
-        robot.step(timestep)
-        
+        #check if initial position is in restricted area       
+        robot.step(timestep)       
         
         tpos = gps.getValues()
         if tpos[1] < 0.01+obj_hgh_offset:
@@ -127,26 +134,19 @@ def PosInit(obj_off):#used for setting initial random values to motor
         if (tpos[0] < 0.12 and tpos[0] >-0.12) and (tpos[2] < 0.12 and tpos[2] >-0.12) :
             isoutside = False
             continue
-        isoutside = True
-        
+        isoutside = True        
         break
-    #dont wory about quick change in position during initial time steps its because of compensating for restricted region  
-    
+    #dont wory about quick change in position during initial time steps its because of compensating for restricted region 
        
-    c = 0# random.randint(0, 1)
-    
+    c = 0# random.randint(0, 1)    
     # check if connection is possible
-    islockable = c1.getPresence()
-    
+    islockable = c1.getPresence()    
     if c == 1:
         c1.lock()
     else:
-        c1.unlock()   
+        c1.unlock() 
     
-    pos = gps.getValues()
-    
-    
-            
+    pos = gps.getValues()        
     return [mv0,mv1,mv2,mv3,mv4,pos[0],pos[1],pos[2],c,islockable,lpx,0.0299986+obj_hgh_offset,lpz,dpx,0.0299986+obj_hgh_offset,dpz]
 
 
@@ -165,7 +165,6 @@ def updateRobot(instate):
     
 
 
-print(get_point_distance([0,0,0],[1,1,1]))
 
 
 #----------------- Environment class ----------------------------------------------------|
@@ -174,9 +173,9 @@ class tars(Env):
         self.doing = 0  #       \
         self.pos_accuracy = 0.001#\ change in these non state variables will require retraining
         self.obj_off = 0.03 # height offset for connector
-        self.step_awaposition#/
+                
         # Action we can take increse angle ,decrease angle,stop x 5 servos and last conncet or not
-        self.action_space = Box(low=np.array([-1.0, -1.0,-1.0,-1.0,-1.0,0]), high=np.array([1.0, 1.0, 1.0, 1.0, 1.0]), dtype=np.intc)
+        self.action_space = Box(low=np.array([-1, -1,-1,-1,-1,0]), high=np.array([1, 1, 1, 1, 1,1]), dtype=np.intc)
        
         #Observationspace                          b m1,m2,m3,m4 px,   py  pz c  ilk  pick pos, drop pos 
         self.observation_space = Box(low=np.array([0, 0,0, 0, 0, -0.7,-0.7,-0.7,0,0, -1,-1,-1,-1,-1,-1]),high=np.array([6.2831853072, 2.0943951024, 2.0943951024, 2.0943951024,2.0943951024,0.7,0.7,0.7,1,1,1,1,1,1,1,1]), dtype=np.float32)                     
@@ -191,8 +190,8 @@ class tars(Env):
         
     def step(self,action): 
         
-        loadpos = robot.getFromDef("load").getField("translation").getSFVec3f()
-               
+        print(action)
+        loadpos = robot.getFromDef("load").getField("translation").getSFVec3f()         
         
         done =False
         info = {}
@@ -232,8 +231,7 @@ class tars(Env):
         # note we update get presence after reward for easyness,bcse lock must be called based on previous get presence,
         # since no proper war of detecting connection is possible
         
-        # No need to update pick pos and Drop pos
-        
+        # No need to update pick pos and Drop pos        
                
         #calculate reward
         reward = 0
@@ -313,8 +311,7 @@ class tars(Env):
             reward-=10
         
         # Each step penality to reduce time
-        reward -=1
-        
+        reward -=1        
         
         # positive reward
         
@@ -340,8 +337,7 @@ class tars(Env):
         # decrease episod
         
         self.episod_length -=1  
-        #incomplete actions
-        
+        #incomplete actions        
         
         # before picking
         if self.episod_length == 0 and  self.doing == 0:
@@ -371,23 +367,32 @@ class tars(Env):
             return self.state, reward, done, info
         
         
- 
-            
-        
-        
-        
-        
         self.state[9]=c1.getPresence() # getPresence() returns -1,0,1 not true or false
         
+        return self.state, reward, done, info
         
+        
+             
     def render(self):
+        # do nothing already done by robot.step()
         pass
+    
     def reset(self):
-        pass
+        
+        PosInit(self.obj_off)
+        self.doing = 0
+        self.episod_length = 1875
+         #setup values for calculating reward  
+             
+        self.init_2_pk_dist = get_point_distance([self.state[5],self.state[6],self.state[7]],[self.state[10],self.state[11],self.state[12]])
+        self.pk_2_dp_dist = get_point_distance([self.state[10],self.state[11],self.state[12]],[self.state[13],self.state[14],self.state[15]])
+                       
+        return self.state
      
 
 
-
+env = tars()
+#print(env.action_space.sample())
 
 #while robot.step(timestep) != -1:
     #print()
@@ -395,8 +400,30 @@ class tars(Env):
     #pass
     
     
+# random actor robot
+def random_test():
+    print("running random test in 5 seconds")
+    time.sleep(5)
+    episodes = 10
+    for episode in range(1, episodes+1):
+        state = env.reset()
+        done = False
+        score = 0 
         
+        while not done:
+            #env.render()
+            action = env.action_space.sample()
+            n_state, reward, done, info = env.step(action)
+            score+=reward
+        print('Episode:{} Score:{}'.format(episode, score))
         
-        
-        
-        
+#random_test()
+
+
+
+
+#------------------------------------------ BUILD MODEL -------------------------------------------------------|
+
+states = env.observation_space.shape
+actions = env.action_space.shape
+
